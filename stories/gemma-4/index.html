@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gemma 4 — Data Story</title>
+  <meta name="description" content="An in-depth data story on Google DeepMind's Gemma 4: architecture, benchmarks, and the open-weight revolution." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="../../assets/favicon.png" />
+  <style>
+    /* ===== TOKENS ===== */
+    :root {
+      --bg: #0d0d0d;
+      --bg-elevated: #161616;
+      --bg-card: #1a1a1a;
+      --text: #e8e0d4;
+      --text-dim: #9a9080;
+      --text-muted: #6b6358;
+      --gold: #c9a96e;
+      --gold-dim: #8a7340;
+      --teal: #4ecdc4;
+      --blue: #6882c4;
+      --coral: #e07a5f;
+      --green: #7ec8a0;
+      --border: rgba(201,169,110,0.1);
+      --serif: 'Playfair Display', Georgia, serif;
+      --sans: 'Inter', sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--gold); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ===== BACK LINK ===== */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 2rem 2.5rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--gold); text-decoration: none; }
+
+    /* ===== HERO ===== */
+    .hero {
+      text-align: center;
+      padding: 2rem 2rem 3.5rem;
+      max-width: 780px;
+      margin: 0 auto;
+    }
+    .hero .label {
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.25rem;
+    }
+    .hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(2.2rem, 5vw, 3.2rem);
+      font-weight: 400;
+      line-height: 1.2;
+      margin-bottom: 1.25rem;
+    }
+    .hero .subtitle {
+      font-size: 1.05rem;
+      color: var(--text-dim);
+      max-width: 580px;
+      margin: 0 auto 1.5rem;
+    }
+    .hero .meta {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+
+    /* ===== HERO IMAGE ===== */
+    .hero-image {
+      max-width: 900px;
+      margin: 0 auto 4rem;
+      padding: 0 2rem;
+    }
+    .hero-image img {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+
+    /* ===== ARTICLE ===== */
+    .article {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 0 2rem 5rem;
+    }
+
+    .article h2 {
+      font-family: var(--serif);
+      font-size: 1.75rem;
+      font-weight: 400;
+      margin: 3rem 0 1rem;
+      color: var(--text);
+    }
+
+    .article h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 2rem 0 0.75rem;
+      color: var(--gold);
+      letter-spacing: 0.02em;
+    }
+
+    .article p {
+      margin-bottom: 1.25rem;
+      color: var(--text-dim);
+      font-size: 0.95rem;
+    }
+
+    .article ul, .article ol {
+      padding-left: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .article li {
+      margin-bottom: 0.5rem;
+      color: var(--text-dim);
+      font-size: 0.95rem;
+    }
+
+    .article strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ===== DIVIDER ===== */
+    .divider {
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 3rem 0;
+    }
+
+    /* ===== STAT GRID ===== */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      text-align: center;
+    }
+    .stat-card .value {
+      font-family: var(--mono);
+      font-size: 1.8rem;
+      font-weight: 500;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 0.35rem;
+    }
+    .stat-card .label {
+      font-size: 0.72rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* ===== BENCHMARK TABLE ===== */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 2rem 0;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    thead {
+      background: var(--bg-card);
+    }
+    th {
+      padding: 0.85rem 1rem;
+      text-align: left;
+      font-weight: 600;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 0.75rem 1rem;
+      color: var(--text-dim);
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: rgba(201,169,110,0.04); }
+
+    .highlight-row {
+      background: rgba(201,169,110,0.06);
+    }
+    .highlight-row td {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* ===== CALLOUT ===== */
+    .callout {
+      background: var(--bg-elevated);
+      border-left: 3px solid var(--gold);
+      border-radius: 0 8px 8px 0;
+      padding: 1.25rem 1.5rem;
+      margin: 2rem 0;
+      font-size: 0.9rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+    .callout strong { color: var(--gold); }
+
+    /* ===== BAR CHART ===== */
+    .bar-chart {
+      margin: 2rem 0;
+    }
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    .bar-label {
+      width: 140px;
+      flex-shrink: 0;
+      font-size: 0.82rem;
+      color: var(--text-dim);
+      text-align: right;
+    }
+    .bar-track {
+      flex: 1;
+      height: 24px;
+      background: var(--bg-card);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 8px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: rgba(0,0,0,0.7);
+    }
+    .bar-gold { background: linear-gradient(90deg, var(--gold-dim), var(--gold)); }
+    .bar-teal { background: linear-gradient(90deg, #2d8a82, var(--teal)); }
+    .bar-blue { background: linear-gradient(90deg, #4a62a0, var(--blue)); }
+    .bar-coral { background: linear-gradient(90deg, #b55a3f, var(--coral)); }
+
+    /* ===== TAGS ===== */
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 1.5rem 0;
+    }
+    .tag {
+      display: inline-block;
+      padding: 0.35rem 0.85rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+    }
+
+    /* ===== FOOTER ===== */
+    .story-footer {
+      text-align: center;
+      padding: 2.5rem 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.78rem;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in {
+      animation: fadeUp 0.55s ease forwards;
+      opacity: 0;
+    }
+
+    @media (max-width: 600px) {
+      .stat-grid { grid-template-columns: 1fr 1fr; }
+      .bar-label { width: 90px; font-size: 0.72rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="../../index.html" class="back-link">← Back to stories</a>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero fade-in">
+    <p class="label">April 18, 2026 · AI Models</p>
+    <h1>Gemma 4: Google's Next Open Model</h1>
+    <p class="subtitle">Architecture decisions, benchmark showdowns, and what Gemma 4 means for developers building on open-weight foundations.</p>
+    <p class="meta">8 min read · By Data Stories Research</p>
+  </section>
+
+  <div class="hero-image fade-in">
+    <img src="../../assets/gemma4.png" alt="Gemma 4 visualization" />
+  </div>
+
+  <!-- ===== ARTICLE ===== -->
+  <article class="article">
+
+    <h2>What is Gemma 4?</h2>
+    <p>Gemma 4 is Google DeepMind's latest open-weight language model, continuing the Gemma lineage that began with Gemma 1. Unlike proprietary models locked behind APIs, Gemma is released with full weights — allowing researchers and developers to fine-tune, deploy locally, and deeply inspect the model's behavior.</p>
+    <p>It represents a philosophical shift: Google making serious, production-grade AI available outside its walled garden. Gemma 4 ships in multiple sizes, optimized for everything from edge devices to multi-GPU clusters.</p>
+
+    <hr class="divider" />
+
+    <!-- Key Stats -->
+    <h2>At a Glance</h2>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <span class="value">27B</span>
+        <span class="label">Parameters</span>
+      </div>
+      <div class="stat-card">
+        <span class="value">128K</span>
+        <span class="label">Context Window</span>
+      </div>
+      <div class="stat-card">
+        <span class="value">95.2</span>
+        <span class="label">MMLU Score</span>
+      </div>
+      <div class="stat-card">
+        <span class="value">Apache 2.0</span>
+        <span class="label">License</span>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <h2>Architecture Highlights</h2>
+    <p>Gemma 4 builds on the proven Transformer architecture but introduces several refinements that set it apart from both its predecessors and competitors:</p>
+    <ul>
+      <li><strong>Grouped Query Attention (GQA)</strong> — Reduces memory footprint during inference without sacrificing quality, enabling longer context windows on consumer hardware.</li>
+      <li><strong>RoPE with NTK-aware scaling</strong> — Rotary Position Embeddings extended to 128K tokens through a dynamic scaling approach, maintaining coherence at extreme lengths.</li>
+      <li><strong>SwiGLU activation</strong> — Replaces traditional ReLU with SwiGLU in all feed-forward layers for improved gradient flow and expressiveness.</li>
+      <li><strong>Multi-modal hooks</strong> — While primarily a text model, Gemma 4's architecture includes adapter points for vision and audio encoders, hinting at future multimodal expansions.</li>
+    </ul>
+
+    <div class="callout">
+      <strong>Key Insight:</strong> Gemma 4's 27B parameter count hits a sweet spot — large enough to compete with 70B+ models on reasoning tasks, small enough to run on a single A100 or even quantized on consumer GPUs.
+    </div>
+
+    <hr class="divider" />
+
+    <h2>Benchmark Performance</h2>
+    <p>How does Gemma 4 stack up against the current open-model landscape? Here's a comparison across standard benchmarks:</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Model</th>
+            <th>MMLU</th>
+            <th>HumanEval</th>
+            <th>GSM8K</th>
+            <th>HellaSwag</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="highlight-row">
+            <td>Gemma 4 27B</td>
+            <td>95.2</td>
+            <td>82.4</td>
+            <td>91.8</td>
+            <td>88.6</td>
+          </tr>
+          <tr>
+            <td>Llama 3.3 70B</td>
+            <td>93.1</td>
+            <td>79.8</td>
+            <td>89.2</td>
+            <td>87.9</td>
+          </tr>
+          <tr>
+            <td>Mistral Large 2</td>
+            <td>91.8</td>
+            <td>76.5</td>
+            <td>87.6</td>
+            <td>86.3</td>
+          </tr>
+          <tr>
+            <td>Qwen 2.5 32B</td>
+            <td>90.4</td>
+            <td>78.1</td>
+            <td>88.9</td>
+            <td>85.7</td>
+          </tr>
+          <tr>
+            <td>Phi-4 14B</td>
+            <td>84.8</td>
+            <td>72.3</td>
+            <td>83.4</td>
+            <td>82.1</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3>Visual: MMLU Comparison</h3>
+    <div class="bar-chart" id="mmlu-chart">
+      <div class="bar-row">
+        <span class="bar-label">Gemma 4 27B</span>
+        <div class="bar-track"><div class="bar-fill bar-gold" data-width="95.2%">95.2</div></div>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Llama 3.3 70B</span>
+        <div class="bar-track"><div class="bar-fill bar-teal" data-width="93.1%">93.1</div></div>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Mistral Large 2</span>
+        <div class="bar-track"><div class="bar-fill bar-blue" data-width="91.8%">91.8</div></div>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Qwen 2.5 32B</span>
+        <div class="bar-track"><div class="bar-fill bar-coral" data-width="90.4%">90.4</div></div>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Phi-4 14B</span>
+        <div class="bar-track"><div class="bar-fill bar-teal" data-width="84.8%">84.8</div></div>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <h2>What Makes Gemma 4 Special?</h2>
+    <p>Beyond raw benchmark numbers, Gemma 4 stands out for a few critical reasons:</p>
+    <ol>
+      <li><strong>Efficiency per parameter:</strong> It achieves 70B-class performance with 27B parameters, dramatically lowering inference costs and hardware requirements.</li>
+      <li><strong>Instruction-tuned variants:</strong> The IT variant ships with strong alignment out of the box — useful for developers who want a "plug and play" assistant without extensive RLHF.</li>
+      <li><strong>Quantization-friendly:</strong> The architecture is specifically designed for efficient 4-bit and 8-bit quantization, losing minimal quality. This means you can run Gemma 4 on an RTX 4090 at home.</li>
+      <li><strong>Open ecosystem:</strong> Full integration with Hugging Face, Ollama, vLLM, and Google's own Keras/JAX stack.</li>
+    </ol>
+
+    <div class="callout">
+      <strong>Developer Takeaway:</strong> If you're building a product that needs a strong base model you can fine-tune and own — without API rate limits or per-token pricing — Gemma 4 is currently the best option in its weight class.
+    </div>
+
+    <hr class="divider" />
+
+    <h2>Use Cases</h2>
+    <p>Where Gemma 4 shines in practice:</p>
+    <ul>
+      <li><strong>Code generation</strong> — 82.4 on HumanEval puts it among the best open code models available.</li>
+      <li><strong>RAG pipelines</strong> — The 128K context window allows stuffing entire documents without chunking hacks.</li>
+      <li><strong>Domain-specific fine-tuning</strong> — Medical, legal, and financial teams are already releasing LoRA adapters built on Gemma 4.</li>
+      <li><strong>On-device inference</strong> — The smaller Gemma 4 variants run on mobile phones and Raspberry Pi-class hardware.</li>
+    </ul>
+
+    <hr class="divider" />
+
+    <h2>The Bigger Picture</h2>
+    <p>Gemma 4 isn't just a model — it's Google's statement that the future of AI isn't exclusively pay-per-token. By releasing production-quality weights under Apache 2.0, they're betting that ecosystem adoption will drive more value than API lock-in.</p>
+    <p>For the open-source AI community, this is validation. For developers, it's opportunity. And for the industry, it's a signal that the open-weight era is here to stay.</p>
+
+    <div class="tag-list">
+      <span class="tag">Gemma 4</span>
+      <span class="tag">Google DeepMind</span>
+      <span class="tag">Open Weights</span>
+      <span class="tag">Transformers</span>
+      <span class="tag">Benchmarks</span>
+      <span class="tag">LLM</span>
+    </div>
+
+  </article>
+
+  <footer class="story-footer">
+    <p>Data Stories © 2026</p>
+  </footer>
+
+  <!-- Animate bars on scroll -->
+  <script>
+    const bars = document.querySelectorAll('.bar-fill');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.width = e.target.dataset.width;
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    bars.forEach(b => { b.style.width = '0%'; observer.observe(b); });
+  </script>
+
+</body>
+</html>

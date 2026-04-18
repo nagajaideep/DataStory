@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Data Stories — AI Research Narratives</title>
+  <meta name="description" content="Curated data stories exploring AI models, emotional intelligence benchmarks, and the landscape of modern machine learning." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="index.css" />
+  <link rel="icon" type="image/png" href="assets/favicon.png" />
+</head>
+<body>
+
+  <!-- ====== HEADER ====== -->
+  <header class="site-header fade-up" id="site-header">
+    <span class="label-caps">Your Calendar · Data Research</span>
+    <h1 class="site-title">Data Stories</h1>
+    <p class="site-tagline">Curated narratives around AI models, benchmarks, and the emotions machines are learning to read.</p>
+  </header>
+
+  <!-- ====== MAIN ====== -->
+  <main class="container">
+    <div class="section-header">
+      <h2 class="section-title">Latest Entries</h2>
+    </div>
+
+    <!-- Search -->
+    <div class="search-bar" id="search-bar">
+      <input type="text" id="search-input" placeholder="Search stories… (title, date, or theme)" />
+      <button id="search-btn">Search</button>
+    </div>
+
+    <!-- Cards -->
+    <div class="card-grid" id="card-grid">
+
+      <!-- Card 1 — Gemma 4 -->
+      <a href="stories/gemma-4/index.html" class="story-card fade-up" id="card-gemma4">
+        <div class="card-image-wrap">
+          <img src="assets/gemma4.png" alt="Gemma 4 — Google DeepMind's open model" loading="lazy" />
+          <div class="card-dots">
+            <span class="dot-blue"></span>
+            <span class="dot-gold"></span>
+            <span class="dot-teal"></span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="card-meta">
+            <span class="card-date">April 18, 2026</span> · AI Models
+          </p>
+          <h3 class="card-title">Gemma 4: Google's Next Open Model</h3>
+          <p class="card-excerpt">A deep dive into Google DeepMind's Gemma 4 — architecture choices, benchmark performance, and what it means for the open-weight ecosystem.</p>
+          <span class="card-link">Open Data Story <span class="arrow">→</span></span>
+        </div>
+      </a>
+
+      <!-- Card 2 — Sentiment & Emotion Models -->
+      <a href="stories/sentiment-models/index.html" class="story-card fade-up" id="card-sentiment">
+        <div class="card-image-wrap">
+          <img src="assets/sentiment.png" alt="Open-source emotion and sentiment models" loading="lazy" />
+          <div class="card-dots">
+            <span class="dot-coral"></span>
+            <span class="dot-teal"></span>
+            <span class="dot-gold"></span>
+          </div>
+        </div>
+        <div class="card-body">
+          <p class="card-meta">
+            <span class="card-date">April 15, 2026</span> · NLP & Emotion
+          </p>
+          <h3 class="card-title">Top Open-Source Models for Emotion & Sentiment</h3>
+          <p class="card-excerpt">Benchmarking DistilRoBERTa, GoEmotions, BART-MNLI and more — which open models actually understand human feelings?</p>
+          <span class="card-link">Open Data Story <span class="arrow">→</span></span>
+        </div>
+      </a>
+
+    </div>
+  </main>
+
+  <!-- ====== FOOTER ====== -->
+  <footer class="site-footer">
+    <p>Data Stories © 2026 — Built with curiosity.</p>
+  </footer>
+
+  <!-- ====== SCRIPT ====== -->
+  <script>
+    // Simple client-side search filter
+    const input = document.getElementById('search-input');
+    const btn = document.getElementById('search-btn');
+    const cards = document.querySelectorAll('.story-card');
+
+    function filterCards() {
+      const q = input.value.toLowerCase().trim();
+      cards.forEach(card => {
+        const text = card.textContent.toLowerCase();
+        card.style.display = text.includes(q) ? '' : 'none';
+      });
+    }
+
+    btn.addEventListener('click', filterCards);
+    input.addEventListener('keyup', e => {
+      if (e.key === 'Enter') filterCards();
+      if (input.value === '') {
+        cards.forEach(c => c.style.display = '');
+      }
+    });
+  </script>
+</body>
+</html>
