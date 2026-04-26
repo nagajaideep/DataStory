@@ -265,6 +265,8 @@ img {
 .dot-coral { background: var(--accent-coral); }
 .dot-gold { background: var(--accent-gold); }
 .dot-blue { background: var(--accent-blue); }
+.dot-purple { background: #a855f7; }
+.dot-red { background: #ef4444; }
 
 /* Card body */
 .card-body {

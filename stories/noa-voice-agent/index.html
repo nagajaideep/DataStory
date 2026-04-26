@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Noa Voice Agent — Data Story</title>
+  <meta name="description" content="Technical deep-dive into Noa Voice Agent: Architecture, Latency, and the $20K GCP Credit Runway." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="../../assets/favicon.png" />
+  <style>
+    /* ===== TOKENS ===== */
+    :root {
+      --bg: #0d0d0d;
+      --bg-elevated: #161616;
+      --bg-card: #1a1a1a;
+      --text: #e8e0d4;
+      --text-dim: #9a9080;
+      --text-muted: #6b6358;
+      --gold: #c9a96e;
+      --gold-dim: #8a7340;
+      --purple: #a855f7;
+      --blue: #3b82f6;
+      --red: #ef4444;
+      --green: #22c55e;
+      --border: rgba(201,169,110,0.1);
+      --serif: 'Playfair Display', Georgia, serif;
+      --sans: 'Inter', sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--gold); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ===== BACK LINK ===== */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 2rem 2.5rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--gold); text-decoration: none; }
+
+    /* ===== HERO ===== */
+    .hero {
+      text-align: center;
+      padding: 2rem 2rem 3.5rem;
+      max-width: 850px;
+      margin: 0 auto;
+    }
+    .hero .label {
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.25rem;
+    }
+    .hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(2.2rem, 5vw, 3.5rem);
+      font-weight: 400;
+      line-height: 1.1;
+      margin-bottom: 1.25rem;
+    }
+    .hero .subtitle {
+      font-size: 1.15rem;
+      color: var(--text-dim);
+      max-width: 650px;
+      margin: 0 auto 1.5rem;
+    }
+    .hero .meta {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+
+    /* ===== HERO IMAGE ===== */
+    .hero-image {
+      max-width: 1000px;
+      margin: 0 auto 4rem;
+      padding: 0 2rem;
+    }
+    .hero-image img {
+      width: 100%;
+      border-radius: 16px;
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+    }
+
+    /* ===== ARTICLE ===== */
+    .article {
+      max-width: 750px;
+      margin: 0 auto;
+      padding: 0 2rem 5rem;
+    }
+
+    .article h2 {
+      font-family: var(--serif);
+      font-size: 2rem;
+      font-weight: 400;
+      margin: 4rem 0 1.5rem;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+
+    .article h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 2.5rem 0 1rem;
+      color: var(--gold);
+      letter-spacing: 0.02em;
+    }
+
+    .article p {
+      margin-bottom: 1.5rem;
+      color: var(--text-dim);
+      font-size: 1rem;
+    }
+
+    .article ul, .article ol {
+      padding-left: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .article li {
+      margin-bottom: 0.75rem;
+      color: var(--text-dim);
+      font-size: 1rem;
+    }
+
+    .article strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ===== ARCHITECTURE DIAGRAM (CSS) ===== */
+    .arch-flow {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin: 3rem 0;
+      padding: 2rem;
+      background: var(--bg-elevated);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .flow-step {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+    .step-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: var(--bg-card);
+      border: 1px solid var(--gold-dim);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-family: var(--mono);
+      font-size: 0.8rem;
+      color: var(--gold);
+    }
+    .step-content {
+      flex: 1;
+    }
+    .step-title {
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+    .step-desc {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+    .flow-arrow {
+      height: 20px;
+      width: 2px;
+      background: var(--border);
+      margin-left: 19px;
+    }
+
+    /* ===== STAT GRID ===== */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      text-align: center;
+      transition: transform 0.3s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-5px);
+      border-color: var(--gold-dim);
+    }
+    .stat-card .value {
+      font-family: var(--mono);
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .stat-card .label {
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* ===== TABLE ===== */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 2.5rem 0;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    th {
+      padding: 1rem 1.5rem;
+      text-align: left;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      padding: 1rem 1.5rem;
+      color: var(--text-dim);
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    tr:last-child td { border-bottom: none; }
+    .highlight-row { background: rgba(201,169,110,0.06); }
+    .highlight-row td { color: var(--text); font-weight: 500; }
+
+    /* ===== WATERFALL CHART ===== */
+    .waterfall {
+      margin: 3rem 0;
+      padding: 2rem;
+      background: var(--bg-card);
+      border-radius: 12px;
+      border: 1px solid var(--border);
+    }
+    .wf-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      height: 32px;
+    }
+    .wf-label {
+      width: 180px;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+    }
+    .wf-track {
+      flex: 1;
+      height: 100%;
+      position: relative;
+    }
+    .wf-bar {
+      height: 100%;
+      border-radius: 4px;
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: white;
+      transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .wf-current { background: var(--blue); }
+    .wf-silk { background: var(--purple); }
+
+    /* ===== CALLOUT ===== */
+    .callout {
+      background: var(--bg-elevated);
+      border-left: 4px solid var(--gold);
+      border-radius: 0 12px 12px 0;
+      padding: 1.5rem 2rem;
+      margin: 2.5rem 0;
+      font-size: 0.95rem;
+      color: var(--text-dim);
+    }
+    .callout strong { color: var(--gold); }
+    .callout.warning { border-left-color: var(--red); }
+    .callout.success { border-left-color: var(--green); }
+
+    /* ===== FOOTER ===== */
+    .story-footer {
+      text-align: center;
+      padding: 4rem 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeUp 0.6s ease forwards; opacity: 0; }
+
+    @media (max-width: 600px) {
+      .wf-row { flex-direction: column; align-items: flex-start; height: auto; gap: 0.5rem; margin-bottom: 1.5rem; }
+      .wf-label { width: 100%; }
+      .wf-track { width: 100%; height: 24px; }
+      .wf-bar { position: relative; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="../../index.html" class="back-link">← Back to stories</a>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero fade-in">
+    <p class="label">Architecture & Strategy · April 2026</p>
+    <h1>Noa Voice Agent: The Engineering Behind AI Therapy</h1>
+    <p class="subtitle">How we built a sub-second voice companion with $20K in GCP credits and a custom-tuned brain.</p>
+    <p class="meta">10 min read · By Anshap Engineering</p>
+  </section>
+
+  <div class="hero-image fade-in">
+    <img src="../../assets/noa-voice-hero.png" alt="Noa Voice Agent Visualization" />
+  </div>
+
+  <!-- ===== ARTICLE ===== -->
+  <article class="article">
+
+    <h2>Introduction</h2>
+    <p>Building a voice agent for mental health isn't just about transcription and synthesis. It's about **reasoning, empathy, and continuity**. Noa is designed to be more than a voice; she is a therapist-in-your-pocket, powered by a custom-tuned LLM and a high-performance voice layer.</p>
+    
+    <p>In this story, we break down our hybrid architecture, analyze the latency bottlenecks, and look at how we've optimized our infrastructure to stretch $20,000 of GCP credits into a year of runway for 10,000 users.</p>
+
+    <hr style="border: none; border-top: 1px solid var(--border); margin: 3rem 0;" />
+
+    <h2>The Architecture: Brain vs. Voice</h2>
+    <p>We chose a **Hybrid Orchestration** model. While all-in-one solutions exist, keeping Noa's "brain" separate from the voice "ears and mouth" allows us to maintain 100% ownership of the therapeutic logic.</p>
+
+    <div class="arch-flow">
+      <div class="flow-step">
+        <div class="step-icon">01</div>
+        <div class="step-content">
+          <div class="step-title">User Input</div>
+          <div class="step-desc">Audio captured via Anshap App (WebSocket)</div>
+        </div>
+      </div>
+      <div class="flow-arrow"></div>
+      <div class="flow-step">
+        <div class="step-icon">02</div>
+        <div class="step-content">
+          <div class="step-title">Google STT (v2)</div>
+          <div class="step-desc">Streaming conversion from voice to text (~250ms)</div>
+        </div>
+      </div>
+      <div class="flow-arrow"></div>
+      <div class="flow-step">
+        <div class="step-icon">03</div>
+        <div class="step-content" style="background: rgba(168, 85, 247, 0.1); padding: 0.75rem; border-radius: 8px; border: 1px dashed var(--purple);">
+          <div class="step-title" style="color: var(--purple);">Noa Model (The Brain)</div>
+          <div class="step-desc">Core reasoning, therapy logic, and response generation</div>
+        </div>
+      </div>
+      <div class="flow-arrow"></div>
+      <div class="flow-step">
+        <div class="step-icon">04</div>
+        <div class="step-content">
+          <div class="step-title">Google TTS</div>
+          <div class="step-desc">Neural2 streaming text-to-audio (~200ms)</div>
+        </div>
+      </div>
+      <div class="flow-arrow"></div>
+      <div class="flow-step">
+        <div class="step-icon">05</div>
+        <div class="step-content">
+          <div class="step-title">Audio Out</div>
+          <div class="step-desc">Low-latency playback on user device</div>
+        </div>
+      </div>
+    </div>
+
+    <h3>Why This approach?</h3>
+    <p>By using Google Cloud Speech APIs for the voice layer, we leverage world-class infrastructure while keeping our core IP—**the Noa Model**—completely isolated. Google never see our model weights or therapeutic prompts.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Recommended (Hybrid)</th>
+            <th>Gemini Live (All-in-one)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="highlight-row">
+            <td><strong>Logic Control</strong></td>
+            <td>Full (You own Noa's brain)</td>
+            <td>Restricted (Google controls model)</td>
+          </tr>
+          <tr>
+            <td><strong>Latency</strong></td>
+            <td>~830ms (Streaming)</td>
+            <td>~300ms (Direct)</td>
+          </tr>
+          <tr>
+            <td><strong>Cost/Call</strong></td>
+            <td>$0.52</td>
+            <td>$0.21</td>
+          </tr>
+          <tr>
+            <td><strong>Privacy</strong></td>
+            <td>High (Logic isolated)</td>
+            <td>Moderate (All-in-one API)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Latency: The 300ms Benchmark</h2>
+    <p>In conversational AI, 1 second is an eternity. Human conversation typically has a gap of 200-400ms. **Rumik AI's "Silk" agent** recently demonstrated that bringing latency down to **300ms** creates a fundamentally different experience—one that feels "alive."</p>
+    
+    <p>Our current architecture hits **~830ms**. Here is the breakdown of where every millisecond goes:</p>
+
+    <div class="waterfall" id="latency-chart">
+      <div class="wf-row">
+        <span class="wf-label">Network Upload</span>
+        <div class="wf-track"><div class="wf-bar wf-current" style="left: 0%; width: 3.6%;" data-val="30ms"></div></div>
+      </div>
+      <div class="wf-row">
+        <span class="wf-label">Google STT</span>
+        <div class="wf-track"><div class="wf-bar wf-current" style="left: 3.6%; width: 30.1%;" data-val="250ms"></div></div>
+      </div>
+      <div class="wf-row">
+        <span class="wf-label">Noa Inference</span>
+        <div class="wf-track"><div class="wf-bar wf-current" style="left: 33.7%; width: 36.1%; background: var(--purple);" data-val="300ms"></div></div>
+      </div>
+      <div class="wf-row">
+        <span class="wf-label">Google TTS</span>
+        <div class="wf-track"><div class="wf-bar wf-current" style="left: 69.8%; width: 24.1%;" data-val="200ms"></div></div>
+      </div>
+      <div class="wf-row">
+        <span class="wf-label">Network Download</span>
+        <div class="wf-track"><div class="wf-bar wf-current" style="left: 93.9%; width: 3.6%;" data-val="30ms"></div></div>
+      </div>
+      <div style="margin-top: 2rem; padding-top: 1rem; border-top: 1px solid var(--border); font-size: 0.8rem; color: var(--text-muted); display: flex; justify-content: space-between;">
+        <span>Total Latency: 830ms</span>
+        <span style="color: var(--purple);">Silk Agent Target: 300ms</span>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Optimization Tip:</strong> By moving Noa to the same GCP region as Google's Speech APIs (us-central1) and utilizing **interim results** from STT, we can begin Noa's inference *while the user is still finishing their sentence*.
+    </div>
+
+    <h2>The Silk Frontier: Rumik AI’s Research</h2>
+    <p>While Noa focuses on deep therapeutic reasoning, researchers at **Rumik AI** (an Indian AI startup) are pushing the boundaries of raw vocal expression with their **Silk** model. Their goal is to eliminate the "robotic" feel of AI by making the voice layer itself emotionally intelligent.</p>
+    
+    <div class="stat-grid">
+      <div class="stat-card" style="text-align: left;">
+        <h4 style="color: var(--purple); margin-bottom: 0.5rem; font-family: var(--serif);">Silk Model (Ira)</h4>
+        <ul style="font-size: 0.85rem; margin-bottom: 0;">
+          <li>Target Latency: <strong>300ms</strong></li>
+          <li>Architecture: <strong>Transformer-Backbone TTS</strong></li>
+          <li>Output: <strong>Discrete Audio Codes</strong></li>
+        </ul>
+      </div>
+      <div class="stat-card" style="text-align: left;">
+        <h4 style="color: var(--gold); margin-bottom: 0.5rem; font-family: var(--serif);">Key Innovations</h4>
+        <ul style="font-size: 0.85rem; margin-bottom: 0;">
+          <li>End-to-end emotional cues (laughing, whispering)</li>
+          <li>Native code-switching (Multilingual)</li>
+          <li>Zero-shot voice cloning</li>
+        </ul>
+      </div>
+    </div>
+
+    <p>Rumik's approach treats speech generation like next-token prediction. Instead of traditional TTS pipelines, Silk predicts discrete audio tokens directly, allowing for human-like pacing, pauses, and affective dialog. This is the gold standard we aim to integrate into Noa’s voice layer.</p>
+
+    <div class="callout" style="border-left-color: var(--purple);">
+      <strong>Research Deep-Dive:</strong> You can explore their latest work and the Ira companion at <a href="https://rumik.ai" target="_blank" style="color: var(--purple); font-weight: 600; text-decoration: underline;">rumik.ai</a>.
+    </div>
+
+    <h2>Economics: The $20,000 Runway</h2>
+    <p>Running a voice agent at scale is expensive. Between STT, TTS, and Cloud Run orchestration, a 5-minute therapy session costs roughly **$0.52**. However, with the $20,000 GCP credits from our startup program, we have significant runway.</p>
+
+    <div class="stat-grid">
+      <div class="stat-card">
+        <span class="value">$0.52</span>
+        <span class="label">Cost Per Call</span>
+      </div>
+      <div class="stat-card">
+        <span class="value">10,000</span>
+        <span class="label">Active Users</span>
+      </div>
+      <div class="stat-card">
+        <span class="value">12 Mo</span>
+        <span class="label">Credit Runway</span>
+      </div>
+    </div>
+
+    <h3>Runway Projections</h3>
+    <p>Our "Sweet Spot" is 10,000 users calling Noa once per week. This gives us 12 months to validate product-market fit before needing a Series A.</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Users</th>
+            <th>Frequency</th>
+            <th>Monthly Cost</th>
+            <th>Runway</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>2,000</td>
+            <td>1x / week</td>
+            <td>$4,510</td>
+            <td>53 Months</td>
+          </tr>
+          <tr>
+            <td>5,000</td>
+            <td>1x / week</td>
+            <td>$10,750</td>
+            <td>22 Months</td>
+          </tr>
+          <tr class="highlight-row">
+            <td>10,000</td>
+            <td>1x / week</td>
+            <td>$21,150</td>
+            <td>12 Months</td>
+          </tr>
+          <tr style="color: var(--red);">
+            <td>10,000</td>
+            <td>3x / week</td>
+            <td>$62,750</td>
+            <td>4 Months</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Safety & Compliance</h2>
+    <p>In mental health, safety is not a feature—it's a foundation. Our architecture includes three critical safety layers:</p>
+    <ul>
+      <li><strong>Crisis Detection Layer:</strong> Real-time intent detection that triggers human intervention if self-harm or ideation is detected.</li>
+      <li><strong>Encrypted Transcripts:</strong> All audio and text logs are encrypted at rest with HIPAA-compliant keys in Google Cloud Logging.</li>
+      <li><strong>Session Memory:</strong> Firestore stores user mood history and context, allowing Noa to remember past conversations and provide continuity.</li>
+    </ul>
+
+    <div class="callout success">
+      <strong>Final Recommendation:</strong> Ship with the **Noa Model + Google Speech APIs** hybrid approach. It offers the best balance of IP ownership, natural latency, and cost efficiency.
+    </div>
+
+    <div style="display: flex; justify-content: center; margin: 4rem 0;">
+      <img src="../../assets/noa-voice.png" alt="Noa Interface" style="max-width: 300px; border-radius: 20px; box-shadow: 0 30px 60px rgba(0,0,0,0.5);" />
+    </div>
+
+  </article>
+
+  <footer class="story-footer">
+    <p>Anshap Data Stories © 2026 · Built for Noa Agent</p>
+  </footer>
+
+  <script>
+    // Animate waterfall bars on scroll
+    const bars = document.querySelectorAll('.wf-bar');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const targetWidth = e.target.getAttribute('style').match(/width:\s*([^;]+)/)[1];
+          e.target.style.width = '0%';
+          setTimeout(() => {
+            e.target.style.width = targetWidth;
+          }, 100);
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    bars.forEach(b => observer.observe(b));
+  </script>
+
+</body>
+</html>
