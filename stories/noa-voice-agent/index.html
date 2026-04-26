@@ -361,14 +361,14 @@
   <article class="article">
 
     <h2>Introduction</h2>
-    <p>Building a voice agent for mental health isn't just about transcription and synthesis. It's about **reasoning, empathy, and continuity**. Noa is designed to be more than a voice; she is a therapist-in-your-pocket, powered by a custom-tuned LLM and a high-performance voice layer.</p>
+    <p>Building a voice agent for mental health isn't just about transcription and synthesis. It's about <strong>reasoning, empathy, and continuity</strong>. Noa is designed to be more than a voice; she is a therapist-in-your-pocket, powered by a custom-tuned LLM and a high-performance voice layer.</p>
     
     <p>In this story, we break down our hybrid architecture, analyze the latency bottlenecks, and look at how we've optimized our infrastructure to stretch $20,000 of GCP credits into a year of runway for 10,000 users.</p>
 
     <hr style="border: none; border-top: 1px solid var(--border); margin: 3rem 0;" />
 
     <h2>The Architecture: Brain vs. Voice</h2>
-    <p>We chose a **Hybrid Orchestration** model. While all-in-one solutions exist, keeping Noa's "brain" separate from the voice "ears and mouth" allows us to maintain 100% ownership of the therapeutic logic.</p>
+    <p>We chose a <strong>Hybrid Orchestration</strong> model. While all-in-one solutions exist, keeping Noa's "brain" separate from the voice "ears and mouth" allows us to maintain 100% ownership of the therapeutic logic.</p>
 
     <div class="arch-flow">
       <div class="flow-step">
@@ -413,7 +413,7 @@
     </div>
 
     <h3>Why This approach?</h3>
-    <p>By using Google Cloud Speech APIs for the voice layer, we leverage world-class infrastructure while keeping our core IP—**the Noa Model**—completely isolated. Google never see our model weights or therapeutic prompts.</p>
+    <p>By using Google Cloud Speech APIs for the voice layer, we leverage world-class infrastructure while keeping our core IP—<strong>the Noa Model</strong>—completely isolated. Google never see our model weights or therapeutic prompts.</p>
 
     <div class="table-wrap">
       <table>
@@ -450,9 +450,9 @@
     </div>
 
     <h2>Latency: The 300ms Benchmark</h2>
-    <p>In conversational AI, 1 second is an eternity. Human conversation typically has a gap of 200-400ms. **Rumik AI's "Silk" agent** recently demonstrated that bringing latency down to **300ms** creates a fundamentally different experience—one that feels "alive."</p>
+    <p>In conversational AI, 1 second is an eternity. Human conversation typically has a gap of 200-400ms. <strong>Rumik AI's "Silk" agent</strong> recently demonstrated that bringing latency down to <strong>300ms</strong> creates a fundamentally different experience—one that feels "alive."</p>
     
-    <p>Our current architecture hits **~830ms**. Here is the breakdown of where every millisecond goes:</p>
+    <p>Our current architecture hits <strong>~830ms</strong>. Here is the breakdown of where every millisecond goes:</p>
 
     <div class="waterfall" id="latency-chart">
       <div class="wf-row">
@@ -482,11 +482,11 @@
     </div>
 
     <div class="callout">
-      <strong>Optimization Tip:</strong> By moving Noa to the same GCP region as Google's Speech APIs (us-central1) and utilizing **interim results** from STT, we can begin Noa's inference *while the user is still finishing their sentence*.
+      <strong>Optimization Tip:</strong> By moving Noa to the same GCP region as Google's Speech APIs (us-central1) and utilizing <strong>interim results</strong> from STT, we can begin Noa's inference <em>while the user is still finishing their sentence</em>.
     </div>
 
     <h2>The Silk Frontier: Rumik AI’s Research</h2>
-    <p>While Noa focuses on deep therapeutic reasoning, researchers at **Rumik AI** (an Indian AI startup) are pushing the boundaries of raw vocal expression with their **Silk** model. Their goal is to eliminate the "robotic" feel of AI by making the voice layer itself emotionally intelligent.</p>
+    <p>While Noa focuses on deep therapeutic reasoning, researchers at <strong>Rumik AI</strong> (an Indian AI startup) are pushing the boundaries of raw vocal expression with their <strong>Silk</strong> model. Their goal is to eliminate the "robotic" feel of AI by making the voice layer itself emotionally intelligent.</p>
     
     <div class="stat-grid">
       <div class="stat-card" style="text-align: left;">
@@ -514,7 +514,7 @@
     </div>
 
     <h2>Economics: The $20,000 Runway</h2>
-    <p>Running a voice agent at scale is expensive. Between STT, TTS, and Cloud Run orchestration, a 5-minute therapy session costs roughly **$0.52**. However, with the $20,000 GCP credits from our startup program, we have significant runway.</p>
+    <p>Running a voice agent at scale is expensive. Between STT, TTS, and Cloud Run orchestration, a 5-minute therapy session costs roughly <strong>$0.52</strong>. However, with the $20,000 GCP credits from our startup program, we have significant runway.</p>
 
     <div class="stat-grid">
       <div class="stat-card">
@@ -582,7 +582,7 @@
     </ul>
 
     <div class="callout success">
-      <strong>Final Recommendation:</strong> Ship with the **Noa Model + Google Speech APIs** hybrid approach. It offers the best balance of IP ownership, natural latency, and cost efficiency.
+      <strong>Final Recommendation:</strong> Ship with the <strong>Noa Model + Google Speech APIs</strong> hybrid approach. It offers the best balance of IP ownership, natural latency, and cost efficiency.
     </div>
 
     <div style="display: flex; justify-content: center; margin: 4rem 0;">
