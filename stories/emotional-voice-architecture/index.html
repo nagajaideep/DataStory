@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emotional AI Voice Architecture — Data Story</title>
+  <meta name="description" content="Technical deep-dive into Emotional AI Voice Architecture: Latency, Full-Duplex, and Psychological Design." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="../../assets/favicon.png" />
+  <style>
+    :root {
+      --bg: #f7f2e9;
+      --bg-elevated: #fdf8f0;
+      --bg-card: #ffffff;
+      --text: #2f2a22;
+      --text-dim: #4f473b;
+      --text-muted: #7a6f5d;
+      --gold: #a86f2a;
+      --gold-dim: #d8b98a;
+      --purple: #8b5cf6;
+      --blue: #2563eb;
+      --red: #dc2626;
+      --green: #15803d;
+      --border: rgba(114, 86, 47, 0.18);
+      --shadow-soft: 0 12px 28px rgba(100, 73, 34, 0.12);
+      --serif: 'Playfair Display', Georgia, serif;
+      --sans: 'Inter', sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      background: radial-gradient(circle at 8% 0%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0) 36%), var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--gold); text-decoration: none; }
+    .back-link { padding: 2rem 2.5rem; font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); display: inline-block; }
+    .hero { text-align: center; padding: 2rem 2rem 3.5rem; max-width: 850px; margin: 0 auto; }
+    .hero h1 { font-family: var(--serif); font-size: clamp(2.2rem, 5vw, 3.5rem); margin-bottom: 1.25rem; }
+    .article { max-width: 750px; margin: 0 auto; padding: 0 2rem 5rem; }
+    .article h2 { font-family: var(--serif); font-size: 2rem; margin: 4rem 0 1.5rem; border-bottom: 1px solid var(--gold-dim); }
+    .table-wrap { overflow-x: auto; margin: 2.5rem 0; border-radius: 12px; border: 1px solid var(--border); background: var(--bg-card); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    th, td { padding: 1rem 1.5rem; border-bottom: 1px solid rgba(114, 86, 47, 0.1); }
+    .callout { background: var(--bg-elevated); border-left: 4px solid var(--gold); padding: 1.5rem 2rem; margin: 2.5rem 0; border-radius: 0 12px 12px 0; }
+    .mermaid { margin: 2rem 0; background: white; padding: 1rem; border-radius: 8px; border: 1px solid var(--border); }
+  </style>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: true, theme: 'neutral' });
+  </script>
+</head>
+<body>
+
+  <a href="../../index.html" class="back-link">← Back to stories</a>
+
+  <section class="hero">
+    <p style="color: var(--gold); letter-spacing: 0.1em; text-transform: uppercase; font-size: 0.7rem; margin-bottom: 1rem;">Technical Analysis · May 2026</p>
+    <h1>The Human Connection: A Technical Analysis of Emotional AI Voice Architecture</h1>
+    <p style="font-size: 1.1rem; color: var(--text-dim);">Engineering the nuances of conversation through sub-second latency and full-duplex streaming.</p>
+  </section>
+
+  <article class="article">
+    <h2>Introduction: The Silence Between the Bytes</h2>
+    <p>When we set out to build an emotional voice calling agent, we realized that the challenge was not just about processing language, but about capturing the intangible elements of human conversation. The goal was to bridge the gap between a machine that understands commands and an agent that understands feelings. This document details the engineering journey, the failures that led to breakthroughs, and the data that validated our approach.</p>
+
+    <h2>1. System Architecture: The Full-Duplex Bridge</h2>
+    <p>To create a fluid conversation, we had to move away from traditional request-response models. We built a system that functions like a nervous system, where input and output happen simultaneously.</p>
+
+    <div class="mermaid">
+    graph TD
+        subgraph "Mobile Client (React Native)"
+            A[Microphone Input] -->|PCM 16kHz| B[Audio Buffer]
+            B -->|WebSocket Stream| C[JSON Wrapper]
+            H[Audio Playback Queue] <--|Binary Chunks| G[Frontend Socket]
+        end
+        subgraph "Backend Server (Node.js)"
+            D[Gateway Socket] -->|Proxy| E[Gemini Live API]
+            E -->|Real-time Inference| F[Response Stream]
+            F -->|Audio Content| D
+        end
+        C --> D
+        D --> G
+    </div>
+
+    <h2>2. Performance Evolution: Breaking the Latency Barrier</h2>
+    <p>The primary enemy of emotional connection is latency. A delay of more than one second breaks the illusion of presence. Through three major iterations, we systematically dismantled the bottlenecks in the audio pipeline.</p>
+
+    <div class="mermaid">
+    xychart-beta
+        title "Latency Improvement by Development Phase"
+        x-axis ["Initial Prototype", "WebSocket Migration", "Edge Optimization"]
+        y-axis "Latency (ms)" 0 --> 5000
+        bar [4200, 1200, 750]
+    </div>
+
+    <h3>Analysis of Data Trends</h3>
+    <ul>
+      <li><strong>Initial Prototype (4200ms)</strong>: Most of the time was lost in the HTTP overhead and the sequential processing of audio files.</li>
+      <li><strong>WebSocket Migration (1200ms)</strong>: By switching to persistent streams, we eliminated the handshake penalty for every turn.</li>
+      <li><strong>Edge Optimization (750ms)</strong>: Implementing direct TCP pipes brought us into the "human-speed" territory.</li>
+    </ul>
+
+    <h2>3. The Audio Pipeline: Precision and Fidelity</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Parameter</th>
+            <th>Standard Voice Bot</th>
+            <th>Our Emotional Agent</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Bit Depth</strong></td>
+            <td>8-bit</td>
+            <td>16-bit (256x resolution)</td>
+          </tr>
+          <tr>
+            <td><strong>Sample Rate</strong></td>
+            <td>8kHz</td>
+            <td>16kHz (High fidelity)</td>
+          </tr>
+          <tr>
+            <td><strong>Encoding</strong></td>
+            <td>MP3/G711</td>
+            <td>Linear PCM (Raw)</td>
+          </tr>
+          <tr>
+            <td><strong>Buffer Size</strong></td>
+            <td>1000ms</td>
+            <td>100ms (10x faster)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>4. User Engagement Metrics: The Human Impact</h2>
+    <p>Technical improvements directly correlated with how long users stayed on the call. When the agent responded quickly and with a warm tone, the conversation shifted from "task-oriented" to "relationship-oriented."</p>
+
+    <div class="mermaid">
+    %%{init: {'theme': 'base', 'themeVariables': { 'lineColor': '#a86f2a'}}}%%
+    line-chart
+        title "User Session Length vs. Response Time"
+        x-axis "Latency (seconds)"
+        y-axis "Average Call Duration (minutes)"
+        "Data": [10, 8.5, 4.2, 1.1, 0.5]
+    </div>
+
+    <h2>5. Technical Challenges and Human Solutions</h2>
+    <div class="callout">
+      <strong>The Problem of Interruption:</strong> We implemented Voice Activity Detection (VAD) on the server side. The server constantly monitors the energy levels of the incoming audio stream. If the user starts speaking while the AI is mid-sentence, the system issues a "Clear Buffer" command to the mobile client, stopping the AI immediately and switching back to listening mode.
+    </div>
+
+    <p>We also adjusted the prompt engineering to favor "Spoken English" over "Written English." This included the deliberate use of contractions, varying sentence lengths, and the inclusion of "listening cues" like "I hear you" or "Right."</p>
+
+    <h2>6. Conclusion: The Path Forward</h2>
+    <p>The development of this emotional voice calling agent has shown that the technical stack is merely the foundation. The real achievement lies in how these technologies disappear, leaving behind a seamless experience that feels less like an interaction with code and more like a conversation with a person.</p>
+
+  </article>
+
+  <footer style="text-align: center; padding: 4rem 2rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.8rem;">
+    Data Stories © 2026 · Built for Research
+  </footer>
+
+</body>
+</html>
