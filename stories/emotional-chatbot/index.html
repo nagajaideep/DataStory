@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Emotional Chatbot: Data Story & Research Guide — Data Story</title>
+  <meta name="description" content="A comprehensive guide to building emotional AI for the Indian context, covering models, datasets, and cultural calibration." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="../../assets/favicon.png" />
+  <style>
+    /* ===== TOKENS (Space3 Dark Theme) ===== */
+    :root {
+      --bg: #0d0d0d;
+      --bg-elevated: #161616;
+      --bg-card: #1a1a1a;
+      --text: #e8e0d4;
+      --text-dim: #9a9080;
+      --text-muted: #6b6358;
+      --gold: #c9a96e;
+      --gold-dim: #8a7340;
+      --teal: #4ecdc4;
+      --blue: #6882c4;
+      --coral: #e07a5f;
+      --green: #7ec8a0;
+      --purple: #a78bfa;
+      --pink: #f472b6;
+      --border: rgba(201,169,110,0.1);
+      --serif: 'Playfair Display', Georgia, serif;
+      --sans: 'Inter', sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--gold); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ===== BACK LINK ===== */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 2rem 2.5rem;
+      font-size: 0.75rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+    .back-link:hover { color: var(--gold); text-decoration: none; }
+
+    /* ===== HERO ===== */
+    .hero {
+      text-align: center;
+      padding: 2rem 2rem 3.5rem;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .hero .label {
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.25rem;
+    }
+    .hero h1 {
+      font-family: var(--serif);
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 400;
+      line-height: 1.2;
+      margin-bottom: 1.25rem;
+    }
+    .hero .subtitle {
+      font-size: 1.1rem;
+      color: var(--text-dim);
+      max-width: 700px;
+      margin: 0 auto 1.5rem;
+    }
+    .hero .meta {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      letter-spacing: 0.04em;
+    }
+
+    /* ===== HERO IMAGE ===== */
+    .hero-image {
+      max-width: 1000px;
+      margin: 0 auto 4rem;
+      padding: 0 2rem;
+    }
+    .hero-image img {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+
+    /* ===== ARTICLE ===== */
+    .article {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 0 2rem 5rem;
+    }
+
+    .article h2 {
+      font-family: var(--serif);
+      font-size: 1.8rem;
+      font-weight: 400;
+      margin: 3.5rem 0 1.25rem;
+      color: var(--text);
+      position: relative;
+    }
+    .article h2::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 0;
+      width: 60px;
+      height: 2px;
+      background: var(--gold);
+    }
+
+    .article h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin: 2.5rem 0 1rem;
+      color: var(--gold);
+      letter-spacing: 0.02em;
+    }
+
+    .article p {
+      margin-bottom: 1.5rem;
+      color: var(--text-dim);
+      font-size: 1rem;
+    }
+
+    .article ul, .article ol {
+      padding-left: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .article li {
+      margin-bottom: 0.75rem;
+      color: var(--text-dim);
+      font-size: 1rem;
+    }
+
+    .article strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ===== DIVIDER ===== */
+    .divider {
+      border: none;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+      margin: 4rem 0;
+    }
+
+    /* ===== TABLES ===== */
+    .table-wrap {
+      overflow-x: auto;
+      margin: 2.5rem 0;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+    th {
+      padding: 1rem 1.25rem;
+      text-align: left;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border-bottom: 1px solid var(--border);
+      background: rgba(201,169,110,0.03);
+    }
+    td {
+      padding: 1rem 1.25rem;
+      color: var(--text-dim);
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+    }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: rgba(201,169,110,0.04); }
+    .highlight { color: var(--teal); font-weight: 600; }
+
+    /* ===== CALLOUT ===== */
+    .callout {
+      background: var(--bg-elevated);
+      border-left: 4px solid var(--gold);
+      border-radius: 0 12px 12px 0;
+      padding: 1.75rem 2rem;
+      margin: 2.5rem 0;
+      font-size: 0.95rem;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+    .callout strong { color: var(--gold); }
+
+    /* ===== GRID FOR DATASETS ===== */
+    .dataset-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+    .dataset-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem;
+      transition: transform 0.3s ease;
+    }
+    .dataset-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(201,169,110,0.2);
+    }
+    .dataset-name {
+      font-family: var(--serif);
+      font-size: 1.2rem;
+      color: var(--text);
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+    .dataset-desc {
+      font-size: 0.9rem;
+      color: var(--text-dim);
+    }
+
+    /* ===== TAGS ===== */
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin: 2rem 0;
+    }
+    .tag {
+      display: inline-block;
+      padding: 0.4rem 1rem;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      font-size: 0.75rem;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      transition: all 0.2s;
+    }
+    .tag:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    /* ===== FOOTER ===== */
+    .story-footer {
+      text-align: center;
+      padding: 4rem 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.8rem;
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeUp 0.6s ease forwards; opacity: 0; }
+
+    @media (max-width: 600px) {
+      .hero { padding: 3rem 1.5rem; }
+      .dataset-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <a href="../../index.html" class="back-link">← Back to stories</a>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero fade-in">
+    <p class="label">May 5, 2026 · Emotional AI & Research</p>
+    <h1>Emotional Chatbot: The Indian Data Story</h1>
+    <p class="subtitle">A comprehensive guide to building culturally calibrated emotional AI. From Selecting the right LLM to sourcing specialized Indian conversational datasets.</p>
+    <p class="meta">12 min read · By Anshap Research Team</p>
+  </section>
+
+  <div class="hero-image fade-in">
+    <img src="../../assets/emotional_chatbot_hero.png" alt="Emotional AI Visualization" />
+  </div>
+
+  <!-- ===== ARTICLE ===== -->
+  <article class="article">
+
+    <h2>1. The Problem Space</h2>
+    <p>Emotional AI chatbots sit at the intersection of NLP, psychology, and cultural intelligence. Most existing models are trained on Western, English-first datasets, making them poor fits for <strong>Indian users</strong> who express emotions through code-mixed language (Hinglish), culturally specific idioms, and different norms around vulnerability and mental health-seeking.</p>
+    <p>Building a robust emotional chatbot for an Indian audience means solving three layered problems: the right <strong>base model</strong>, the right <strong>datasets</strong>, and <strong>cultural calibration</strong>.</p>
+
+    <hr class="divider" />
+
+    <h2>2. Which LLM Should You Use?</h2>
+    
+    <h3>Closed / API Models (Rapid Prototyping)</h3>
+    <ul>
+      <li><strong>Claude Sonnet 3.5 / Opus 3 — Best for empathetic tone:</strong> Claude brings unmatched clarity in communication and emotionally intelligent writing. It consistently ranks as the most "human-feeling" model.</li>
+      <li><strong>GPT-4o — Best overall empathy balance:</strong> In head-to-head tests, GPT-4o led in reading underlying distress and immediate safety checks on self-harm prompts.</li>
+      <li><strong>Grok 1.5 — Highest EQ benchmark score:</strong> Grok currently holds a top spot on EQ-Bench, measuring ability to understand subtext and social cues.</li>
+      <li><strong>Gemini 1.5 Pro — Best for multimodal emotional understanding:</strong> Useful if you later want voice or video emotion input.</li>
+    </ul>
+
+    <h3>Open Source / Self-Hostable (Fine-tuning on Indian data)</h3>
+    <ul>
+      <li><strong>LLaMA 3 (Meta):</strong> The most fine-tuning-friendly open model. Default starting point for custom emotional chatbots using LoRA.</li>
+      <li><strong>Mistral Large / Mixtral:</strong> Good mid-range options with privacy-sensitive deployment capabilities.</li>
+      <li><strong>DeepSeek V2:</strong> Cost-efficient and strong for low-resource fine-tuning scenarios.</li>
+    </ul>
+
+    <div class="callout">
+      <strong>Recommendation:</strong> Use <strong>Claude Sonnet 3.5 or GPT-4o</strong> for the base API (warmest tone, best safety guardrails), or <strong>LLaMA 3 fine-tuned with LoRA</strong> if you want full data control and Indian-language customization.
+    </div>
+
+    <hr class="divider" />
+
+    <h2>3. Emotional Datasets — Global Foundation</h2>
+    <div class="dataset-grid">
+      <div class="dataset-card">
+        <span class="dataset-name">EmpatheticDialogues</span>
+        <p class="dataset-desc">25,000 human-to-human dialogues grounded in 32 emotion labels. The benchmark for Empathetic Response Generation.</p>
+      </div>
+      <div class="dataset-card">
+        <span class="dataset-name">ESConv</span>
+        <p class="dataset-desc">Emotional Support Conversation dataset. Models how a supporter helps someone navigate emotional distress over multiple turns.</p>
+      </div>
+      <div class="dataset-card">
+        <span class="dataset-name">IEMOCAP</span>
+        <p class="dataset-desc">Multimodal dataset covering anger, happiness, sadness, frustration, and neutral states.</p>
+      </div>
+      <div class="dataset-card">
+        <span class="dataset-name">CounselChat / PsyQA</span>
+        <p class="dataset-desc">Datasets constructed from counselor-patient interactions, used for training on therapeutic dialogue.</p>
+      </div>
+    </div>
+
+    <hr class="divider" />
+
+    <h2>4. Indian & South Asian Datasets</h2>
+    <p>Localization is critical. These datasets capture the specific emotional nuances of the Indian context:</p>
+    <ul>
+      <li><strong>EmoInHindi (IIT Patna):</strong> 44,247 utterances for mental health and legal counselling, annotated with 16 emotion categories.</li>
+      <li><strong>MEISD (IIT Patna):</strong> Multimodal Multi-Label Emotion, Intensity and Sentiment Dialogue Dataset.</li>
+      <li><strong>EmoMent:</strong> Emotion-annotated mental health corpus from South Asian public Facebook groups.</li>
+      <li><strong>Hindi Conversational Mental Health:</strong> Adapted from Empathetic Dialogues for counselor-like responses in Hindi.</li>
+      <li><strong>Hinglish Code-Mixed Tweets:</strong> Realistic representation of how Indian users express emotion online (Hindi-English mix).</li>
+    </ul>
+
+    <hr class="divider" />
+
+    <h2>5. Psychologist & Clinical Data Sources</h2>
+    <p>Grounded in actual therapeutic frameworks:</p>
+    <ul>
+      <li><strong>CounselChat:</strong> Real Q&A between counselors and clients.</li>
+      <li><strong>PARTNER (IIT Patna):</strong> Persuasive mental health dialogue system for women and children crime victims.</li>
+      <li><strong>PSY framework datasets:</strong> Built around CBT (Cognitive Behavioral Therapy) and motivational interviewing strategies.</li>
+    </ul>
+
+    <hr class="divider" />
+
+    <h2>6. Benchmarks & Evaluation</h2>
+    <p>How do you measure emotional intelligence in AI?</p>
+    <ul>
+      <li><strong>EQ-Bench:</strong> Primary benchmark for empathy, subtext, and social cues.</li>
+      <li><strong>HEART Benchmark:</strong> Assesses multi-turn interaction and emotionally resistant users.</li>
+      <li><strong>MME-Emotion:</strong> Holistic evaluation for multimodal emotional intelligence.</li>
+    </ul>
+
+    <hr class="divider" />
+
+    <h2>7. Fine-Tuning Strategy Summary</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Approach</th>
+            <th>Best For</th>
+            <th>Tools</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Full fine-tune</strong></td>
+            <td>Maximum cultural customization</td>
+            <td>HuggingFace Trainer</td>
+          </tr>
+          <tr>
+            <td><strong>LoRA / QLoRA</strong></td>
+            <td>GPU-efficient Indian data tuning</td>
+            <td>PEFT library</td>
+          </tr>
+          <tr>
+            <td><strong>DPO</strong></td>
+            <td>Aligning tone to empathetic style</td>
+            <td>TRL library</td>
+          </tr>
+          <tr>
+            <td><strong>RAG + Prompting</strong></td>
+            <td>Fast deployment without training</td>
+            <td>LangChain / LlamaIndex</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <hr class="divider" />
+
+    <h2>8. Quick Decision Table</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Need</th>
+            <th>Best Choice</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Warmest out-of-box tone</td>
+            <td class="highlight">Claude Sonnet / Opus</td>
+          </tr>
+          <tr>
+            <td>Highest EQ score</td>
+            <td class="highlight">Grok 1.5</td>
+          </tr>
+          <tr>
+            <td>Mental health safety</td>
+            <td class="highlight">GPT-4o / Claude</td>
+          </tr>
+          <tr>
+            <td>Hindi emotional data</td>
+            <td class="highlight">EmoInHindi (IIT Patna)</td>
+          </tr>
+          <tr>
+            <td>South Asian cultural data</td>
+            <td class="highlight">EmoMent</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tag-list">
+      <span class="tag">Emotional AI</span>
+      <span class="tag">Indian Context</span>
+      <span class="tag">Hinglish</span>
+      <span class="tag">Mental Health</span>
+      <span class="tag">LLM Benchmarks</span>
+      <span class="tag">IIT Patna</span>
+      <span class="tag">Claude</span>
+      <span class="tag">LLaMA 3</span>
+    </div>
+
+  </article>
+
+  <footer class="story-footer">
+    <p>Anshap Data Stories © 2026 · Building Empathetic Systems</p>
+  </footer>
+
+</body>
+</html>
