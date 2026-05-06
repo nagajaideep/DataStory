@@ -243,6 +243,81 @@
       color: var(--text-dim);
     }
 
+    /* ===== STAT GRID ===== */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1.5rem;
+      margin: 2.5rem 0;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.75rem;
+      text-align: center;
+      transition: transform 0.3s ease, border-color 0.3s ease;
+    }
+    .stat-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(201,169,110,0.3);
+    }
+    .stat-card .value {
+      font-family: var(--mono);
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--gold);
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+    .stat-card .label {
+      font-size: 0.7rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* ===== BAR CHART ===== */
+    .bar-chart { margin: 3rem 0; }
+    .bar-row {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      margin-bottom: 1rem;
+    }
+    .bar-label {
+      width: 140px;
+      flex-shrink: 0;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      text-align: right;
+    }
+    .bar-track {
+      flex: 1;
+      height: 24px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.05);
+    }
+    .bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      padding-right: 12px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: rgba(0,0,0,0.8);
+      width: 0%; /* Initial state for animation */
+    }
+    .bar-gold { background: linear-gradient(90deg, var(--gold-dim), var(--gold)); }
+    .bar-teal { background: linear-gradient(90deg, #2d8a82, var(--teal)); }
+    .bar-blue { background: linear-gradient(90deg, #4a62a0, var(--blue)); }
+    .bar-purple { background: linear-gradient(90deg, #7854c4, var(--purple)); }
+
     /* ===== TAGS ===== */
     .tag-list {
       display: flex;
@@ -381,12 +456,57 @@
     <hr class="divider" />
 
     <h2>6. Benchmarks & Evaluation</h2>
-    <p>How do you measure emotional intelligence in AI?</p>
-    <ul>
-      <li><strong>EQ-Bench:</strong> Primary benchmark for empathy, subtext, and social cues.</li>
-      <li><strong>HEART Benchmark:</strong> Assesses multi-turn interaction and emotionally resistant users.</li>
-      <li><strong>MME-Emotion:</strong> Holistic evaluation for multimodal emotional intelligence.</li>
-    </ul>
+    <p>Emotional intelligence in LLMs is no longer vibes-based; it's measured through rigorous scoring systems. The <strong>EQ-Bench v3</strong> remains the primary metric for subtext and empathy.</p>
+
+    <!-- EQ-Bench Visualization -->
+    <h3>EQ-Bench v3: Emotional Intelligence Scores</h3>
+    <div class="bar-chart" id="eq-chart">
+      <div class="bar-row">
+        <span class="bar-label">Grok 1.5</span>
+        <div class="bar-track"><div class="bar-fill bar-gold" data-width="84.2%">84.2</div></div>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Claude 3 Opus</span>
+        <div class="bar-track"><div class="bar-fill bar-purple" data-width="82.1%">82.1</div></div>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">GPT-4o</span>
+        <div class="bar-track"><div class="bar-fill bar-blue" data-width="81.5%">81.5</div></div>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">LLaMA 3 (70B)</span>
+        <div class="bar-track"><div class="bar-fill bar-teal" data-width="76.8%">76.8</div></div>
+      </div>
+      <div class="bar-row">
+        <span class="bar-label">Gemini 1.5 Pro</span>
+        <div class="bar-track"><div class="bar-fill bar-blue" data-width="75.2%">75.2</div></div>
+      </div>
+    </div>
+
+    <h3>HEART Benchmark: The 4 Pillars</h3>
+    <p>The HEART benchmark evaluates how models handle difficult conversations over multiple turns.</p>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <span class="value">Empathy</span>
+        <span class="label">Emotional Resonance</span>
+      </div>
+      <div class="stat-card">
+        <span class="value">Safety</span>
+        <span class="label">Crisis Guardrails</span>
+      </div>
+      <div class="stat-card">
+        <span class="value">Coherence</span>
+        <span class="label">Multi-turn Flow</span>
+      </div>
+      <div class="stat-card">
+        <span class="value">Tact</span>
+        <span class="label">Strategic Support</span>
+      </div>
+    </div>
+
+    <div class="callout">
+      <strong>Benchmark Insight:</strong> While Grok leads in raw EQ score, <strong>Claude 3</strong> remains the favorite for clinical applications due to its higher "Warmth" and "Tact" scores on the HEART benchmark.
+    </div>
 
     <hr class="divider" />
 
@@ -477,6 +597,20 @@
   <footer class="story-footer">
     <p>Anshap Data Stories © 2026 · Building Empathetic Systems</p>
   </footer>
+
+  <script>
+    // Animate bars on scroll
+    const bars = document.querySelectorAll('.bar-fill');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.style.width = e.target.dataset.width;
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.2 });
+    bars.forEach(b => observer.observe(b));
+  </script>
 
 </body>
 </html>
