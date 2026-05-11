@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LiveKit vs Jitsi vs Google Meet - Simple Cost Comparison</title>
+  <meta name="description" content="A simple data story comparing LiveKit, Jitsi as a Service, and Google Meet pricing for counselor sessions in a mental health app." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="icon" type="image/png" href="../../assets/favicon.png" />
+  <style>
+    :root {
+      --bg: #0d0d0d;
+      --bg-elevated: #141414;
+      --bg-card: #1b1b1b;
+      --bg-table: #171717;
+      --text: #e8e0d4;
+      --text-dim: #aaa092;
+      --text-muted: #746b60;
+      --gold: #c9a96e;
+      --gold-dim: #8a7340;
+      --teal: #4ecdc4;
+      --blue: #6882c4;
+      --coral: #e07a5f;
+      --green: #7ec8a0;
+      --purple: #a78bfa;
+      --red: #ef7770;
+      --border: rgba(201, 169, 110, 0.12);
+      --border-soft: rgba(255, 255, 255, 0.06);
+      --serif: 'Playfair Display', Georgia, serif;
+      --sans: 'Inter', sans-serif;
+      --mono: 'JetBrains Mono', monospace;
+      --max: 1120px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.75;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--gold); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    img { display: block; max-width: 100%; height: auto; }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 2rem 2.5rem;
+      font-size: 0.74rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      transition: color 0.2s ease;
+    }
+    .back-link:hover { color: var(--gold); text-decoration: none; }
+
+    .hero {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 1rem 2rem 3rem;
+      display: grid;
+      grid-template-columns: minmax(0, 0.95fr) minmax(320px, 1.05fr);
+      gap: 3rem;
+      align-items: center;
+    }
+    .label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+    h1, h2 {
+      font-family: var(--serif);
+      font-weight: 400;
+      letter-spacing: 0;
+      line-height: 1.17;
+    }
+    .hero h1 {
+      font-size: clamp(2.15rem, 5vw, 4rem);
+      margin-bottom: 1.25rem;
+    }
+    .subtitle {
+      color: var(--text-dim);
+      font-size: 1.02rem;
+      max-width: 660px;
+      margin-bottom: 1.5rem;
+    }
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      color: var(--text-muted);
+      font-size: 0.78rem;
+    }
+    .pill {
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 0.32rem 0.75rem;
+      background: rgba(255,255,255,0.02);
+    }
+    .hero-visual img {
+      width: 100%;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      box-shadow: 0 24px 80px rgba(0,0,0,0.42);
+    }
+
+    .article {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 2rem 5rem;
+    }
+    .section {
+      padding: 3rem 0;
+      border-top: 1px solid var(--border);
+    }
+    .section h2 {
+      font-size: clamp(1.6rem, 3vw, 2.25rem);
+      margin-bottom: 1rem;
+    }
+    .section > p {
+      color: var(--text-dim);
+      max-width: 760px;
+      font-size: 0.96rem;
+      margin-bottom: 1.2rem;
+    }
+    .muted { color: var(--text-muted); }
+    .strong { color: var(--text); font-weight: 700; }
+
+    .recommendation {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 1rem;
+      margin-top: 1.5rem;
+    }
+    .verdict {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.4rem;
+    }
+    .verdict h3 {
+      font-size: 0.78rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 0.8rem;
+    }
+    .verdict p {
+      color: var(--text-dim);
+      font-size: 0.92rem;
+      margin-bottom: 0.75rem;
+    }
+    .score-big {
+      font-family: var(--mono);
+      color: var(--teal);
+      font-size: 2rem;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+      display: block;
+    }
+
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 2rem 0;
+    }
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.1rem;
+    }
+    .stat-card .value {
+      display: block;
+      font-family: var(--mono);
+      color: var(--gold);
+      font-size: 1.45rem;
+      margin-bottom: 0.35rem;
+    }
+    .stat-card .label {
+      display: block;
+      color: var(--text-muted);
+      font-size: 0.68rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      line-height: 1.45;
+    }
+
+    .table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      margin: 1.4rem 0 2rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg-table);
+    }
+    table {
+      width: 100%;
+      min-width: 840px;
+      border-collapse: collapse;
+      font-size: 0.84rem;
+    }
+    thead { background: var(--bg-card); }
+    th {
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-align: left;
+      padding: 0.8rem 0.9rem;
+      border-bottom: 1px solid var(--border);
+    }
+    td {
+      color: var(--text-dim);
+      padding: 0.78rem 0.9rem;
+      border-bottom: 1px solid var(--border-soft);
+      vertical-align: top;
+    }
+    tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: rgba(201,169,110,0.035); }
+    .yes { color: var(--green); font-weight: 700; }
+    .warn { color: var(--gold); font-weight: 700; }
+    .no { color: var(--red); font-weight: 700; }
+    .compact { font-size: 0.78rem; line-height: 1.55; }
+
+    .compare-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+      margin: 1.5rem 0 2rem;
+    }
+    .platform-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+    .platform-card h3 {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: 1.35rem;
+      margin-bottom: 0.35rem;
+    }
+    .platform-card .fit {
+      color: var(--gold);
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 0.85rem;
+    }
+    .platform-card ul {
+      padding-left: 1.1rem;
+      color: var(--text-dim);
+      font-size: 0.88rem;
+    }
+    .platform-card li { margin-bottom: 0.52rem; }
+
+    .chart-wrap {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin: 1.5rem 0 2rem;
+    }
+    .chart {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.25rem;
+    }
+    .chart h3 {
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.72rem;
+      margin-bottom: 1rem;
+    }
+    .bar-row {
+      display: grid;
+      grid-template-columns: 126px minmax(0, 1fr) 54px;
+      gap: 0.8rem;
+      align-items: center;
+      margin-bottom: 0.82rem;
+    }
+    .bar-label {
+      color: var(--text-dim);
+      font-size: 0.8rem;
+      text-align: right;
+    }
+    .bar-track {
+      background: #101010;
+      border: 1px solid var(--border-soft);
+      height: 24px;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .bar {
+      width: 0;
+      height: 100%;
+      border-radius: 4px;
+      transition: width 900ms cubic-bezier(0.4,0,0.2,1);
+    }
+    .bar.livekit { background: linear-gradient(90deg, #2d8a82, var(--teal)); }
+    .bar.jitsi { background: linear-gradient(90deg, #b55a3f, var(--coral)); }
+    .bar.meet { background: linear-gradient(90deg, #4a62a0, var(--blue)); }
+    .bar-val {
+      color: var(--text-muted);
+      font-family: var(--mono);
+      font-size: 0.76rem;
+    }
+    .legend {
+      display: flex;
+      gap: 0.9rem;
+      flex-wrap: wrap;
+      margin-top: 0.7rem;
+      color: var(--text-muted);
+      font-size: 0.72rem;
+    }
+    .legend span::before {
+      content: "";
+      display: inline-block;
+      width: 9px;
+      height: 9px;
+      margin-right: 0.35rem;
+      border-radius: 50%;
+      vertical-align: -1px;
+    }
+    .legend .lk::before { background: var(--teal); }
+    .legend .jt::before { background: var(--coral); }
+    .legend .gm::before { background: var(--blue); }
+    .note {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      line-height: 1.6;
+      margin-top: 0.9rem;
+    }
+
+    .stacked {
+      display: grid;
+      gap: 0.78rem;
+      margin-top: 0.2rem;
+    }
+    .score-line {
+      display: grid;
+      grid-template-columns: 132px repeat(3, minmax(40px, 1fr));
+      gap: 0.55rem;
+      align-items: center;
+      color: var(--text-dim);
+      font-size: 0.78rem;
+    }
+    .score-line .metric { text-align: right; color: var(--text-muted); }
+    .score-dot {
+      height: 26px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: #0d0d0d;
+      font-weight: 700;
+    }
+    .score-dot.lk { background: rgba(78,205,196,0.9); }
+    .score-dot.jt { background: rgba(224,122,95,0.9); }
+    .score-dot.gm { background: rgba(104,130,196,0.95); }
+
+    .flow {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 0.9rem;
+      margin-top: 1.5rem;
+    }
+    .flow-step {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      min-height: 138px;
+    }
+    .flow-step span {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(201,169,110,0.16);
+      color: var(--gold);
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      margin-bottom: 0.75rem;
+    }
+    .flow-step h3 {
+      font-size: 0.95rem;
+      color: var(--text);
+      margin-bottom: 0.45rem;
+    }
+    .flow-step p {
+      color: var(--text-dim);
+      font-size: 0.82rem;
+      line-height: 1.55;
+    }
+
+    .source-list {
+      columns: 2;
+      column-gap: 2rem;
+      margin-top: 1rem;
+    }
+    .source-list li {
+      break-inside: avoid;
+      margin: 0 0 0.55rem 1.1rem;
+      color: var(--text-dim);
+      font-size: 0.82rem;
+    }
+    .story-footer {
+      text-align: center;
+      padding: 2.5rem 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.78rem;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { opacity: 0; animation: fadeUp 0.55s ease forwards; }
+
+    @media (max-width: 920px) {
+      .hero,
+      .recommendation,
+      .chart-wrap,
+      .compare-grid,
+      .flow {
+        grid-template-columns: 1fr;
+      }
+      .stat-grid { grid-template-columns: 1fr 1fr; }
+      .hero { gap: 1.8rem; }
+    }
+    @media (max-width: 620px) {
+      .back-link { padding: 1.3rem 1.25rem; }
+      .hero, .article { padding-left: 1.15rem; padding-right: 1.15rem; }
+      .stat-grid { grid-template-columns: 1fr; }
+      .bar-row { grid-template-columns: 88px minmax(0, 1fr) 44px; gap: 0.5rem; }
+      .bar-label { font-size: 0.72rem; }
+      .score-line { grid-template-columns: 96px repeat(3, minmax(34px, 1fr)); }
+      .source-list { columns: 1; }
+    }
+  </style>
+</head>
+<body>
+  <a href="../../index.html" class="back-link">&larr; Back to stories</a>
+
+  <header class="hero fade-in">
+    <div>
+      <p class="label">May 11, 2026 - Telehealth Infrastructure</p>
+      <h1>LiveKit vs Jitsi vs Google Meet for Counselor Sessions</h1>
+      <p class="subtitle">A simple cost and feature comparison for adding counselor video sessions to a mental health app, with clear per-session and yearly pricing assumptions.</p>
+      <div class="hero-meta">
+        <span class="pill">Use case: counselor-client sessions</span>
+        <span class="pill">Scale model: 5,000 clients</span>
+        <span class="pill">Session model: 45 minutes</span>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <img src="../../assets/meeting-platforms.png" alt="Abstract secure meeting platform comparison visual" />
+    </div>
+  </header>
+
+  <main class="article">
+    <section class="section">
+      <h2>Conclusion First</h2>
+      <p><span class="strong">Cheapest for 5,000 client sessions:</span> Google Meet, if only counselors need paid Workspace seats and clients join as guests.</p>
+      <p><span class="strong">Best product integration:</span> LiveKit, because the meeting can live fully inside the app with custom consent, waiting room, roles, recording, and safety flows.</p>
+      <p><span class="strong">Fastest embedded option:</span> Jitsi as a Service, because it gives a ready-made branded meeting room without building every video feature yourself.</p>
+
+      <div class="recommendation">
+        <div class="verdict">
+          <h3>Best Overall Choice</h3>
+          <span class="score-big">LiveKit</span>
+          <p>Choose LiveKit if the video session is part of the mental health product itself. It costs more effort to build, but gives the cleanest control over clinical UX and recordings.</p>
+        </div>
+        <div class="verdict">
+          <h3>Cheapest Choice</h3>
+          <span class="score-big">Meet</span>
+          <p>Choose Google Meet if the goal is low cost and counselors are already on Google Workspace. It is cheap, but the meeting feels less native to your app.</p>
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <span class="value">5,000</span>
+          <span class="label">Clients per month</span>
+        </div>
+        <div class="stat-card">
+          <span class="value">5,000</span>
+          <span class="label">Sessions per month</span>
+        </div>
+        <div class="stat-card">
+          <span class="value">225K</span>
+          <span class="label">Session minutes per month</span>
+        </div>
+        <div class="stat-card">
+          <span class="value">50</span>
+          <span class="label">Counselor seats assumed</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Pricing Assumptions</h2>
+      <p>To keep the comparison fair and easy to understand, all costs below use the same usage model.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Metric</th>
+              <th>Assumption Used</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Active clients</td>
+              <td>5,000 monthly active clients</td>
+            </tr>
+            <tr>
+              <td>Session volume</td>
+              <td>Each client has one 45-minute counselor session per month, so 5,000 sessions/month</td>
+            </tr>
+            <tr>
+              <td>Participant minutes</td>
+              <td>Two people per session: client + counselor. 5,000 x 45 x 2 = 450,000 participant-minutes/month</td>
+            </tr>
+            <tr>
+              <td>Recording minutes</td>
+              <td>If every session is recorded: 5,000 x 45 = 225,000 recording minutes/month</td>
+            </tr>
+            <tr>
+              <td>Google Meet seats</td>
+              <td>50 paid counselor seats. Clients join as guests. If all 5,000 users need paid Workspace seats, cost changes massively.</td>
+            </tr>
+            <tr>
+              <td>Excluded from estimate</td>
+              <td>Taxes, storage overages, optional transcription, SMS reminders, custom enterprise discounts, and internal engineering cost</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Per-Session Cost</h2>
+      <p>This is the simplest view: how much one 45-minute counselor session costs with and without recording, after applying the scale assumptions above.</p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Platform</th>
+              <th>Without Recording</th>
+              <th>With Recording</th>
+              <th>What This Means</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="strong">LiveKit</span></td>
+              <td><span class="yes">~$0.04/session</span></td>
+              <td><span class="warn">~$0.75/session</span></td>
+              <td>Cheap without recording. Recording every full video session makes the cost much higher.</td>
+            </tr>
+            <tr>
+              <td><span class="strong">Jitsi / JaaS</span></td>
+              <td><span class="warn">~$0.60/session</span></td>
+              <td><span class="warn">~$1.05/session</span></td>
+              <td>Predictable by monthly active users, but 5,000 users moves into enterprise or overage territory.</td>
+            </tr>
+            <tr>
+              <td><span class="strong">Google Meet</span></td>
+              <td><span class="yes">~$0.17/session</span></td>
+              <td><span class="yes">~$0.17/session*</span></td>
+              <td>Cheapest when only counselors are paid Workspace users and clients join as guests.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">*Google Meet has no listed per-minute recording fee on eligible Workspace editions, but recordings use Google Drive storage and need proper admin, consent, retention, and access controls.</p>
+    </section>
+
+    <section class="section">
+      <h2>Yearly Cost For 5,000 Clients</h2>
+      <p>This compares the yearly cost for 5,000 monthly client sessions. For Google Meet, the model assumes 50 paid counselor accounts and guest client joins.</p>
+
+      <div class="chart">
+        <h3>Estimated Yearly Cost</h3>
+        <div class="bar-row">
+          <span class="bar-label">Meet no recording</span>
+          <div class="bar-track"><div class="bar meet" data-width="13%"></div></div>
+          <span class="bar-val">$10.1K</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Meet recorded</span>
+          <div class="bar-track"><div class="bar meet" data-width="13%"></div></div>
+          <span class="bar-val">$10.1K</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">LiveKit no recording</span>
+          <div class="bar-track"><div class="bar livekit" data-width="4%"></div></div>
+          <span class="bar-val">$2.4K</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">LiveKit recorded</span>
+          <div class="bar-track"><div class="bar livekit" data-width="57%"></div></div>
+          <span class="bar-val">$45.1K</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">JaaS no recording</span>
+          <div class="bar-track"><div class="bar jitsi" data-width="45%"></div></div>
+          <span class="bar-val">$35.7K</span>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">JaaS recorded</span>
+          <div class="bar-track"><div class="bar jitsi" data-width="79%"></div></div>
+          <span class="bar-val">$62.7K</span>
+        </div>
+        <p class="note">LiveKit no-recording uses Ship usage math. LiveKit recorded uses Scale because it is cheaper for this recording volume. JaaS 5,000-user pricing is officially Enterprise/contact-sales; the estimate uses the published Business tier plus $0.99/MAU overage and should be treated as a public-pricing approximation.</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Platform</th>
+              <th>Yearly Without Recording</th>
+              <th>Yearly With Recording</th>
+              <th>Cheapest?</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="strong">LiveKit</span></td>
+              <td><span class="yes">~$2,400</span></td>
+              <td><span class="warn">~$45,060</span></td>
+              <td>Cheapest if you do not record sessions.</td>
+            </tr>
+            <tr>
+              <td><span class="strong">Jitsi / JaaS</span></td>
+              <td><span class="warn">~$35,748*</span></td>
+              <td><span class="warn">~$62,748*</span></td>
+              <td>Not cheapest, but fast to embed.</td>
+            </tr>
+            <tr>
+              <td><span class="strong">Google Meet</span></td>
+              <td><span class="yes">~$10,080</span></td>
+              <td><span class="yes">~$10,080 + storage governance</span></td>
+              <td>Cheapest if every session must be recorded.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">*JaaS official 5,000+ tier says contact sales. The number shown is a transparent estimate using published Business pricing and overage. A sales quote could be lower or higher.</p>
+    </section>
+
+    <section class="section">
+      <h2>Feature Comparison</h2>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>LiveKit</th>
+              <th>Jitsi / JaaS</th>
+              <th>Google Meet</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Screen sharing</td>
+              <td><span class="yes">Yes</span></td>
+              <td><span class="yes">Yes</span></td>
+              <td><span class="yes">Yes</span></td>
+            </tr>
+            <tr>
+              <td>Recording</td>
+              <td><span class="yes">Yes, API based</span></td>
+              <td><span class="yes">Yes, add-on or Jibri</span></td>
+              <td><span class="yes">Yes, on eligible Workspace editions</span></td>
+            </tr>
+            <tr>
+              <td>App-native UX</td>
+              <td><span class="yes">Best</span></td>
+              <td><span class="warn">Good</span></td>
+              <td><span class="warn">Limited</span></td>
+            </tr>
+            <tr>
+              <td>Fastest to launch</td>
+              <td><span class="warn">Needs build work</span></td>
+              <td><span class="yes">Fast</span></td>
+              <td><span class="yes">Fastest</span></td>
+            </tr>
+            <tr>
+              <td>HIPAA path</td>
+              <td>BAA required before PHI use</td>
+              <td>8x8 says BAA available</td>
+              <td>Workspace BAA required before PHI use</td>
+            </tr>
+            <tr>
+              <td>Best use</td>
+              <td>Long-term mental health app integration</td>
+              <td>Embedded video with less custom build</td>
+              <td>Low-cost operations with Google Workspace</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Simple Final Recommendation</h2>
+      <p><span class="strong">If you want the cheapest answer:</span> use Google Meet with paid counselor seats and guest client access. It is the lowest yearly cost when recording is required.</p>
+      <p><span class="strong">If you want the best product answer:</span> use LiveKit. It is the better long-term fit for a mental health app because the session can be fully controlled inside your own product.</p>
+      <p><span class="strong">If you want the fastest embedded launch:</span> use Jitsi as a Service. It is a good middle path, but at 5,000 users the pricing should be confirmed with 8x8 sales.</p>
+      <p><span class="strong">Recommended path:</span> start with Google Meet or Jitsi for quick validation, but plan LiveKit if counselor sessions become a core product experience with consent, recording, notes, safety workflows, and AI features.</p>
+    </section>
+
+    <section class="section">
+      <h2>Sources Checked</h2>
+      <p class="compact">Pricing and feature data can change. These links were checked while building this story on May 11, 2026.</p>
+      <ul class="source-list">
+        <li><a href="https://livekit.com/pricing">LiveKit pricing</a></li>
+        <li><a href="https://docs.livekit.io/home/egress/overview">LiveKit recording and export docs</a></li>
+        <li><a href="https://docs.livekit.io/home/egress/participant">LiveKit participant and screen-share egress docs</a></li>
+        <li><a href="https://livekit.io/legal/hipaa">LiveKit HIPAA eligible services</a></li>
+        <li><a href="https://cpaas.8x8.com/pricing/jitsi-as-a-service-pricing/">8x8 Jitsi as a Service pricing</a></li>
+        <li><a href="https://cpaas.8x8.com/en/products/jitsi-jaas-video-sdk/">8x8 JaaS feature and compliance page</a></li>
+        <li><a href="https://developer.8x8.com/jaas/docs/faq/">8x8 JaaS billing FAQ</a></li>
+        <li><a href="https://github.com/jitsi/jibri">Jibri recording project</a></li>
+        <li><a href="https://support.google.com/a/answer/13062337?hl=en">Google Workspace Business pricing</a></li>
+        <li><a href="https://support.google.com/meet/answer/9308681?hl=en">Google Meet recording requirements</a></li>
+        <li><a href="https://support.google.com/meet/answer/9308856">Google Meet presenting and screen share</a></li>
+        <li><a href="https://developers.google.com/meet/api/guides/overview">Google Meet API overview</a></li>
+        <li><a href="https://workspace.google.com/terms/2015/1/hipaa_functionality/">Google Workspace HIPAA included functionality</a></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="story-footer">
+    <p>Data Stories &copy; 2026</p>
+  </footer>
+
+  <script>
+    const bars = document.querySelectorAll('.bar');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.width = entry.target.dataset.width;
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.25 });
+    bars.forEach(bar => observer.observe(bar));
+  </script>
+</body>
+</html>
